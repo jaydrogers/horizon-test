@@ -1,9 +1,8 @@
 #!/bin/sh
-
+HOSTNAME=$(hostname)
 echo "🚀 Starting Horizon container '$HOSTNAME'..."
 php /var/www/html/artisan horizon &
 HORIZON_PID=$!
-echo "Horizon started with PID: $HORIZON_PID"
 
 stop_horizon() {
   echo "⏬ Received signal: $1, shutting down Horizon..."
