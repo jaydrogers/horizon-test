@@ -41,6 +41,7 @@ services:
       - "storage_sessions:/var/www/html/storage/framework/sessions"
       - "storage_logs:/var/www/html/storage/logs"
     deploy:
+      replicas: 1
       update_config:
         failure_action: rollback
         parallelism: 1
@@ -63,7 +64,7 @@ services:
         - "traefik.http.services.my-php-app.loadbalancer.server.port=8080"
         - "traefik.http.services.my-php-app.loadbalancer.server.scheme=http"
         # Health check
-        - "traefik.http.services.my-php-app.loadbalancer.healthcheck.path=/ping"
+        - "traefik.http.services.my-php-app.loadbalancer.healthcheck.path=/healthcheck"
         - "traefik.http.services.my-php-app.loadbalancer.healthcheck.interval=30s"
         - "traefik.http.services.my-php-app.loadbalancer.healthcheck.timeout=5s"
         - "traefik.http.services.my-php-app.loadbalancer.healthcheck.scheme=http"
@@ -85,7 +86,7 @@ services:
         failure_action: rollback
         parallelism: 1
         delay: 5s
-        order: start-first
+        order: stop-first
       rollback_config:
         parallelism: 0
         order: stop-first
