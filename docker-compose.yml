@@ -9,8 +9,17 @@ services:
   php:
     depends_on:
       - traefik
+      - redis
   
   horizon:
     entrypoint: "/entrypoint/horizon.sh"
+    healthcheck:
+      test: ["CMD", "php", "/var/www/html/artisan", "horizon:status"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+      start_interval: 5s
     depends_on:
       - redis
+      - php
