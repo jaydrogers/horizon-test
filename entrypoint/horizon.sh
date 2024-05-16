@@ -1,6 +1,10 @@
 #!/bin/sh
 HOSTNAME=$(hostname)
 echo "🚀 Starting Horizon container '$HOSTNAME'..."
+# Ensure the Laravel configuration is up-to-date
+php /var/www/html/artisan config:clear
+
+# Start the Horizon process
 php /var/www/html/artisan horizon &
 HORIZON_PID=$!
 
