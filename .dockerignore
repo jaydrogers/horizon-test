@@ -5,3 +5,5 @@
 Dockerfile
 docker-*.yml
 .gitlab-ci.yml
+!.infrastructure/conf/traefik/dev/certificates/ssu-ca.pem
+.spin*

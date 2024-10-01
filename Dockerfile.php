@@ -4,18 +4,16 @@
 
 # Learn more about the Server Side Up PHP Docker Images at:
 # https://serversideup.net/open-source/docker-php/
-FROM serversideup/php-dev:8.3-fpm-nginx-alpine as base
+FROM serversideup/php-dev:445-8.3-fpm-nginx-alpine AS base
 
-# Uncomment if you need to install additional PHP extensions
+## Uncomment if you need to install additional PHP extensions
 # USER root
-# RUN apk update && apk add iputils
-
-COPY --chmod=755 ./entrypoint/ /entrypoint/
+# RUN install-php-extensions bcmath gd
 
 ############################################
 # Development Image
 ############################################
-FROM base as development
+FROM base AS development
 
 # We can pass USER_ID and GROUP_ID as build arguments
 # to ensure the www-data user has the same UID and GID
@@ -25,6 +23,10 @@ ARG GROUP_ID
 
 # Switch to root so we can set the user ID and group ID
 USER root
+
+# Trust the self-signed certificate
+COPY .infrastructure/conf/traefik/dev/certificates/ssu-ca.pem /usr/local/share/ca-certificates/ssu-ca.crt
+RUN update-ca-certificates
 
 # Set the user ID and group ID for www-data
 RUN docker-php-serversideup-set-id www-data $USER_ID:$GROUP_ID  && \
@@ -36,7 +38,7 @@ USER www-data
 ############################################
 # CI image
 ############################################
-FROM base as ci
+FROM base AS ci
 
 # Sometimes CI images need to run as root
 # so we set the ROOT user and configure
@@ -48,6 +50,11 @@ RUN echo "user = www-data" >> /usr/local/etc/php-fpm.d/docker-php-serversideup-p
 ############################################
 # Production Image
 ############################################
-FROM base as deploy
+FROM base AS deploy
 COPY --chown=www-data:www-data . /var/www/html
+
+# Create the SQLite directory and set the owner to www-data (remove this if you're not using SQLite)
+RUN mkdir -p /var/www/html/.infrastructure/volume_data/sqlite/ && \
+    chown -R www-data:www-data /var/www/html/.infrastructure/volume_data/sqlite/
+
 USER www-data
