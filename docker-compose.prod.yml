@@ -122,6 +122,7 @@ services:
   horizon:
     image: ${SPIN_IMAGE_DOCKERFILE_PHP}
     stop_grace_period: 30s
+    stop_signal: SIGTERM
     environment:
       PHP_OPCACHE_ENABLE: "1"
     networks:
